@@ -1,0 +1,24 @@
+# Comando pra rodar: ansible-playbook playbook.yml -u ubuntu --private-key iac-nicolas.pem -i hosts.yml
+- hosts: terraform-ansible
+  become: true  # Necessário para executar tarefas com privilégios de root
+  tasks:
+    - name: Atualiza a lista de pacotes
+      apt:
+        update_cache: yes
+        cache_valid_time: 10800 #(3 horas), define por quanto tempo (em segundos) o Ansible considera válida a última atualização da lista de pacotes APT (feita com apt update), evitando chamadas desnecessárias
+
+    - name: Instala o Apache
+      apt:
+        name: apache2
+        state: present # Garante que o pacote apache2 esteja instalado no sistema. Se ainda não estiver, instale. Se já estiver, não faz nada."
+
+    - name: Cria o arquivo index.html na pasta do Apache
+      copy:
+        content: "<h1>Feito com terraform e Ansible</h1>"
+        dest: /var/www/html/index.html
+
+    - name: Inicia e habilita o servico do Apache
+      systemd:
+        name: apache2
+        state: started
+        enabled: true

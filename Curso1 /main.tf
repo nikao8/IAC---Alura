@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 variable "my_ip" {
-  default = "MEU_IP_AQUI/32" // Ex: "189.45.67.89/32"
+  default = "IP_AQUI/32" // Ex: "189.45.67.89/32"
 }
 
 ########### Extra passando criacao do SecurityGroup e adicionando regra de entrada para ssh no meuip ###########
@@ -27,6 +27,14 @@ resource "aws_security_group" "ssh_sg" {
     to_port          = 22
     protocol         = "tcp"
     cidr_blocks      = [var.my_ip]
+  }
+
+  ingress {
+    description      = "Libera porta 80 HTTP para acesso ao servidor web"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
   }
 
   egress {
@@ -48,6 +56,16 @@ resource "aws_instance" "ec2_instance_example" {
   instance_type          = "t3.micro"
   key_name               = "iac-nicolas"
   vpc_security_group_ids = [aws_security_group.ssh_sg.id]
+
+  # Essa parte sera feita com ansible
+  #user_data = <<-EOF
+  #            #!/bin/bash
+  #            apt-get update
+  #            apt-get install -y apache2
+  #            echo "Hello, World!" > /var/www/html/index.html
+  #            systemctl start apache2
+  #            systemctl enable apache2
+  #          EOF
 
   tags = {
     Name = "Instancia Teste Terraform"
