@@ -1,24 +1,60 @@
 # Comando pra rodar: ansible-playbook playbook.yml -u ubuntu --private-key iac-nicolas.pem -i hosts.yml
 - hosts: terraform-ansible
-  become: true  # Necessário para executar tarefas com privilégios de root
+  #become: true  # Necessário para executar tarefas com privilégios de root
   tasks:
-    - name: Atualiza a lista de pacotes
+    - name: Instalando python3 e virtualenv
       apt:
-        update_cache: yes
-        cache_valid_time: 10800 #(3 horas), define por quanto tempo (em segundos) o Ansible considera válida a última atualização da lista de pacotes APT (feita com apt update), evitando chamadas desnecessárias
+        pkg:
+          - python3
+          - python3-venv
+        update_cache: true
+        state: present
+      become: true  # Necessário para executar tarefas com privilégios de root
 
-    - name: Instala o Apache
-      apt:
-        name: apache2
-        state: present # Garante que o pacote apache2 esteja instalado no sistema. Se ainda não estiver, instale. Se já estiver, não faz nada."
+    - name: Instalando deps com pip Django e Django REST Framework
+      pip:
+        name:
+          - django
+          - djangorestframework
+        virtualenv: /home/ubuntu/projeto/venv  # Caminho do ambiente virtual
+        virtualenv_command: python3 -m venv  # Comando para criar o ambiente virtual
+      become: true  # Necessário para executar tarefas com privilégios de root
 
-    - name: Cria o arquivo index.html na pasta do Apache
-      copy:
-        content: "<h1>Feito com terraform e Ansible</h1>"
-        dest: /var/www/html/index.html
+    - name: Iniciando projeto Django
+      shell: '
+        . /home/ubuntu/projeto/venv/bin/activate && 
+        django-admin startproject setup /home/ubuntu/projeto'
+      ignore_errors: true
+      become: true
 
-    - name: Inicia e habilita o servico do Apache
-      systemd:
-        name: apache2
-        state: started
-        enabled: true
+    - name: Alterando o hosts do settings do Django
+      lineinfile:
+        path: /home/ubuntu/projeto/setup/settings.py
+        regexp: '^ALLOWED_HOSTS = \['
+        line: 'ALLOWED_HOSTS = ["*"]'  # Permite todos os hosts
+      become: true
+
+    - name: Iniciando server na porta 8000
+      shell: ' . /home/ubuntu/projeto/venv/bin/activate && nohup python /home/ubuntu/projeto/setup/manage.py runserver 0.0.0.0:8000 &'
+      become: true
+
+    #- name: Atualiza a lista de pacotes
+    #  apt:
+    #    update_cache: true
+    #    cache_valid_time: 10800 #(3 horas), define por quanto tempo (em segundos) o Ansible considera válida a última atualização da lista de pacotes APT (feita com apt update), evitando chamadas desnecessárias
+
+    #- name: Instala o Apache
+    #  apt:
+    #    name: apache2
+    #    state: present # Garante que o pacote apache2 esteja instalado no sistema. Se ainda não estiver, instale. Se já estiver, não faz nada."
+
+    #- name: Cria o arquivo index.html na pasta do Apache
+    #  copy:
+    #    content: "<h1>Feito com terraform e Ansible</h1>"
+    #    dest: /var/www/html/index.html
+
+    #- name: Inicia e habilita o servico do Apache
+    #  systemd:
+    #   name: apache2
+    #  state: started
+    # enabled: true

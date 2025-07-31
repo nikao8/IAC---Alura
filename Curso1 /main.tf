@@ -12,7 +12,8 @@ provider "aws" {
 }
 
 variable "my_ip" {
-  default = "IP_AQUI/32" // Ex: "189.45.67.89/32"
+  # Liberando para todos a nivel de teste
+  default = "0.0.0.0/0" // Ex: "189.45.67.89/32"
 }
 
 ########### Extra passando criacao do SecurityGroup e adicionando regra de entrada para ssh no meuip ###########
@@ -33,6 +34,14 @@ resource "aws_security_group" "ssh_sg" {
     description      = "Libera porta 80 HTTP para acesso ao servidor web"
     from_port        = 80
     to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = [var.my_ip]
+  }
+
+  ingress {
+    description      = "Libera porta 8000 para acesso ao servidor web django"
+    from_port        = 8000
+    to_port          = 8000
     protocol         = "tcp"
     cidr_blocks      = [var.my_ip]
   }
@@ -68,6 +77,6 @@ resource "aws_instance" "ec2_instance_example" {
   #          EOF
 
   tags = {
-    Name = "Instancia Teste Terraform"
+    Name = "Terraform-Ansible Python"
   }
 }
