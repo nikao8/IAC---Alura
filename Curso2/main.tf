@@ -45,7 +45,7 @@ data "aws_vpc" "default" {
   default = true
 }
 
-resource "aws_instance" "ec2_instance_example" {
+resource "aws_instance" "ec2_instance_wordpress" {
   ami                    = "ami-020cba7c55df1f615" // ubuntu t3.micro ami
   instance_type          = "t3.micro"
   key_name               = "iac-nicolas"
