@@ -49,7 +49,7 @@ resource "aws_instance" "ec2_instance_example" {
   ami                    = "ami-020cba7c55df1f615" // ubuntu t3.micro ami
   instance_type          = "t3.micro"
   key_name               = "iac-nicolas"
-  vpc_security_group_ids = [aws_security_group.ssh_sg.id]
+  vpc_security_group_ids = [aws_security_group.access_sg.id]
  
   tags = {
     Name = "Curso Ansible"

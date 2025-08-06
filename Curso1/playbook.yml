@@ -1,4 +1,4 @@
-# Comando pra rodar: ansible-playbook playbook.yml -u ubuntu --private-key iac-nicolas.pem -i hosts.yml
+# Comando pra rodar: ansible-playbook playbook.yml -u ubuntu --private-key iac-nicolas.pem -i hosts.ini
 - hosts: terraform-ansible
   #become: true  # Necessário para executar tarefas com privilégios de root
   tasks:

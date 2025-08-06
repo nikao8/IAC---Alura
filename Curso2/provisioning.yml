@@ -1,0 +1,38 @@
+---
+# Comando para rodar: ansible-playbook provisioning.yml -i hosts.ini
+- hosts: all # todos hosts do arquivo hosts.ini
+  become: true  # Necessário para executar tarefas com privilégios de root
+  tasks:
+    - name: "Instalando pacotes dependências Wordpress"
+      ansible.builtin.apt:
+        pkg:
+          - apache2
+          - ghostscript
+          - libapache2-mod-php
+          - mysql-server
+          - php
+          - php-bcmath
+          - php-curl
+          - php-imagick
+          - php-intl
+          - php-json
+          - php-mbstring
+          - php-mysql
+          - php-xml
+          - php-zip
+        state: latest
+        update_cache: true
+        cache_valid_time: 43200 # 12 horas, nao roda o apt update (update_cache) se a lista de pacotes estiver atualizada dentro deste tempo
+
+    - name: "Instalação Wordpress - Criando diretório do Wordpress"
+      ansible.builtin.file:
+        path: /srv/www
+        state: directory
+        owner: www-data
+        group: www-data
+
+    - name: "Instalação Wordpress - Baixando Wordpress"
+      ansible.builtin.unarchive:
+        src: https://wordpress.org/latest.tar.gz
+        dest: /srv/www
+        remote_src: true
