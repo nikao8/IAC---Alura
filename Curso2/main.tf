@@ -18,7 +18,7 @@ variable "my_ip" {
 
 ########### Extra passando criacao do SecurityGroup e adicionando regra de entrada para ssh no meuip ###########
 resource "aws_security_group" "access_sg" {
-  name        = "ssh-from-my-ip"
+  name        = "server-access-sg"
   description = "Allow SSH access from my IP"
   vpc_id      = data.aws_vpc.default.id
 
@@ -30,6 +30,13 @@ resource "aws_security_group" "access_sg" {
     cidr_blocks      = [var.my_ip]
   }
 
+  ingress {
+    description      = "HTTP access"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = [var.my_ip]
+  }
 
   egress {
     description      = "Allow all outbound traffic"
