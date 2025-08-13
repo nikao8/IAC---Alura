@@ -66,7 +66,11 @@ resource "aws_security_group" "access_mysql" {
     from_port                  = 3306
     to_port                    = 3306
     protocol                   = "tcp"
-    security_groups            = [aws_security_group.access_wordpress.id]  # aqui liberamos atraves do security group do wordpress, ou seja, quem estiver naquele sg sera liberado neste
+
+    #com security groups nao tava funcionando, avaliar depois
+    #security_groups            = [aws_security_group.access_wordpress.id]  # aqui liberamos atraves do security group do wordpress, ou seja, quem estiver naquele sg sera liberado neste
+    
+    cidr_blocks   = ["${aws_instance.ec2_instance_wordpress.public_ip}/32"]
   }
 
   egress {
