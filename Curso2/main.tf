@@ -23,7 +23,7 @@ resource "aws_security_group" "access_wordpress" {
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
-    description      = "SSH Nicolas"
+    description      = "SSH Ansible"
     from_port        = 22
     to_port          = 22
     protocol         = "tcp"
@@ -52,6 +52,14 @@ resource "aws_security_group" "access_mysql" {
   name        = "access-mysql-sg"
   description = "Allow access to Wordpress MySQL"
   vpc_id      = data.aws_vpc.default.id
+
+  ingress {
+    description      = "SSH Ansible"
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = [var.my_ip]
+  }
 
   ingress {
     description                = "MYSQL access from WordPress"

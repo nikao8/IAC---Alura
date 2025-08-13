@@ -82,8 +82,9 @@
         - {search_string: "define( 'NONCE_SALT',       'put your unique phrase here' );", line: "define('NONCE_SALT',       'aRPBWv|-SRO;yc6.)~q3b0&i)@X-J|{hscbk`wS(vPn0bpkKq?A4<5a!|U5>CQ~J');"}
 
 - hosts: mysql_wordpress # todos hosts do arquivo hosts.ini
-  tasks:
 
+  become: true
+  tasks:
     - name: "Instalando pacotes dependências Wordpress"
       ansible.builtin.apt:
         pkg:
