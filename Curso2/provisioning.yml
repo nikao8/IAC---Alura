@@ -43,22 +43,22 @@
         remote_src: true
 
     - name: "Instalação Wordpress - Copiando arquivo de configuração"
-      ansible.builtin.copy:
-        src: './files/wordpress.conf'
+      ansible.builtin.template:
+        src: './templates/wordpress.conf.j2'
         dest: '/etc/apache2/sites-available/000-default.conf'
       notify: 
         - restart apache
 
     - name: "Adicionando o arquivo de configuração do Wordpress (pegando o modelo e renomeando para wp-config.php)"
       ansible.builtin.copy:
-        src: '/srv/www/wordpress/wp-config-sample.php'
-        dest: '/srv/www/wordpress/wp-config.php'
+        src: '{{ wp_path }}/wp-config-sample.php'
+        dest: '{{ wp_path }}/wp-config.php'
         force: false # Não sobrescreve se o arquivo já existir
         remote_src: true
 
     - name: "Replace no nome do banco e user no arquivo de configuração do Wordpress (wp-config.php)"
       ansible.builtin.replace:
-        path: /srv/www/wordpress/wp-config.php
+        path: '{{ wp_path }}/wp-config.php'
         regexp: '{{ item.regexp }}'
         replace: '{{ item.replace }}'
       with_items:
@@ -70,7 +70,7 @@
 
     - name: "Adicionando configuracoes de segurança no wp-config.php"
       ansible.builtin.lineinfile:
-        path: /srv/www/wordpress/wp-config.php
+        path: '{{ wp_path }}/wp-config.php'
         search_string: '{{ item.search_string }}'
         line: "{{ item.line }}"
       with_items:
@@ -91,7 +91,6 @@
         name: mysql
         state: restarted
       
-
   become: true
   tasks:
     - name: "Instalando pacotes Mysql Server"

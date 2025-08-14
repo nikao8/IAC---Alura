@@ -1,3 +1,4 @@
+---
 database: "wordpress_db"
 username: "wordpress"
 password: "12345"
