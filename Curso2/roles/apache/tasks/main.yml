@@ -1,0 +1,21 @@
+---
+- name: "Instalando pacotes dependências Wordpress"
+  ansible.builtin.apt:
+    pkg:
+      - apache2
+      - ghostscript
+      - libapache2-mod-php
+      - php
+      - php-bcmath
+      - php-curl
+      - php-imagick
+      - php-intl
+      - php-json
+      - php-mbstring
+      - php-xml
+      - php-zip
+      - php-mysql
+    state: latest
+    update_cache: true
+    cache_valid_time: 43200 # 12 horas, nao roda o apt update (update_cache) se a lista de pacotes estiver atualizada dentro deste tempo
+  become: true
