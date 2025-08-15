@@ -3,7 +3,7 @@
 
 - hosts: wordpress
   roles:
-    - apache
+  #  - apache Nao é necessario aqui, pois esta definido que wordpress é dependente do apache na "meta"
     - wordpress
 
 - hosts: mysql
