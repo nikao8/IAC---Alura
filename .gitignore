@@ -41,3 +41,12 @@ terraform.rc
 
 # End of https://www.toptal.com/developers/gitignore/api/terraform
 
+node_modules/
+dist/
+build/
+
+
+# Ambiente
+.env
+.env.local
+.env.*.local
