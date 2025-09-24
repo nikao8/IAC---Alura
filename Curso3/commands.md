@@ -54,3 +54,72 @@ Util quando precisa de desempenho na Leitura/Escrita ou armazenamento temporári
 
 Volume → Persistente, armazenado em disco, sobrevive à parada e recriação de containers.
 tmpfs → Temporário, armazenado em RAM, desaparece quando o container é parado.
+
+### Network:
+
+Inspecionar informações de rede de um container
+`docker inspect <container-id>`
+
+Mostra detalhes do container, incluindo as redes às quais ele está conectado.
+
+Listar redes existentes
+`docker network ls`
+
+Criar uma rede customizada
+`docker network create --driver <bridge|host|none> minha-rede`
+
+
+- bridge → rede isolada padrão do Docker, onde containers podem se comunicar entre si pelo nome do container (DNS interno).
+
+- host → o container compartilha diretamente a rede do host (sem isolamento de portas).
+
+- none → o container não possui rede; fica isolado.
+
+Comunicação entre containers
+
+Obs:
+
+Para comunicar via nome do container (ping ubuntu2), é necessário usar uma rede customizada bridge.
+
+Para comunicar via IP do container, a rede bridge padrão já permite.
+
+Exemplo:
+
+`docker run -it --name ubuntu1 --network minha-rede ubuntu bash`
+`docker run -it --name ubuntu2 --network minha-rede ubuntu sleep 1d`
+
+Dentro de ubuntu1:
+`ping ubuntu2`
+
+Funciona, pois estão na mesma rede e podem se resolver pelo DNS interno do Docker.
+
+**Driver host**
+
+No modo host, o container não possui stack de rede isolada:
+
+Ele compartilha a mesma interface e IP do host.
+
+Útil quando queremos máxima performance em rede ou evitar NAT.
+
+As portas expostas do container ficam acessíveis diretamente no host sem precisar de -p.
+
+Exemplo com app-node:latest (servidor HTTP na porta 3000):
+`docker run --rm --network host app-node:latest`
+
+
+O servidor ficará acessível em: `http://localhost:3000` (sem precisar mapear porta com -p).
+
+**Driver none**
+
+No modo none, o container não tem interface de rede configurada.
+
+Ele fica isolado, sem acesso à rede externa ou a outros containers.
+
+Útil para cenários de segurança ou containers que não precisam de rede.
+
+Exemplo:
+
+`docker run -it --network none app-node:latest`
+
+Neste caso o container sobe, mas não terá conectividade de rede.
+Só poderá ser acessado via docker exec (terminal interno).
