@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  app:
+    image: app-node:latest
+    container_name: app-node
+    ports:
+      - "3000:3000"
+    networks:
+      - minha-rede
+    depends_on: # Indica que o serviço 'app' depende do serviço 'db', app so inicia depois que o db estiver rodando
+      - db
+  
+  db:
+    image: mongo:latest
+    container_name: mongo-db
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - minha-rede
+
+networks:
+  minha-rede:
+    driver: bridge
+
+volumes:
+  mongo-data:
